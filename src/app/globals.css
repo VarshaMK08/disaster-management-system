@@ -1,26 +1,108 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --gov-navy: #1a3a5c;
+  --gov-blue: #003087;
+  --gov-orange: #d4450c;
+  --gov-gold: #c8960c;
+  --gov-light: #f0f4f8;
+  --gov-white: #ffffff;
+  --gov-gray: #6b7280;
+  --gov-border: #d1d5db;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--gov-light);
+  font-family: 'Georgia', serif;
+}
+
+.gov-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #003087 100%);
+}
+
+.gov-sidebar {
+  background-color: #1a3a5c;
+}
+
+.gov-btn-primary {
+  background-color: #003087;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.gov-btn-primary:hover {
+  background-color: #1a3a5c;
+}
+
+.gov-btn-danger {
+  background-color: #d4450c;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.gov-btn-edit {
+  background-color: #c8960c;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 14px;
+}
+
+.gov-table th {
+  background-color: #1a3a5c;
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.gov-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.gov-table tr:hover {
+  background-color: #f0f4f8;
+}
+
+.gov-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.gov-input:focus {
+  outline: none;
+  border-color: #003087;
+  box-shadow: 0 0 0 2px rgba(0, 48, 135, 0.2);
+}
+
+.gov-label {
+  font-weight: 600;
+  color: #1a3a5c;
+  font-size: 13px;
+  margin-bottom: 4px;
+  display: block;
 }

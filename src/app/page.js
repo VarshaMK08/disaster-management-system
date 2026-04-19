@@ -1,65 +1,67 @@
-import Image from "next/image";
+// src/app/page.js
+'use client'
+import { initialDisasters, initialVictims, initialReliefCamps, initialVolunteers, initialResources } from '@/lib/data'
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+const StatCard = ({ icon, label, value, color }) => (
+  <div style={{
+    background: 'white', borderRadius: '6px', padding: '20px',
+    borderTop: `4px solid ${color}`, boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    display: 'flex', alignItems: 'center', gap: '16px'
+  }}>
+    <div style={{ fontSize: '36px' }}>{icon}</div>
+    <div>
+      <div style={{ fontSize: '28px', fontWeight: '700', color: color }}>{value}</div>
+      <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '600' }}>{label}</div>
     </div>
-  );
+  </div>
+)
+
+export default function Dashboard() {
+  const activeDisasters = initialDisasters.filter(d => d.status === 'Active').length
+  const totalAffected = initialDisasters.reduce((sum, d) => sum + d.affectedPeople, 0)
+
+  return (
+    <div>
+      <h1 style={{ color: '#1a3a5c', fontSize: '22px', fontWeight: '700', marginBottom: '4px' }}>
+        📋 Dashboard Overview
+      </h1>
+      <p style={{ color: '#6b7280', marginBottom: '24px', fontSize: '13px' }}>
+        Real-time status of disaster management operations across India
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+        <StatCard icon="🌊" label="Active Disasters" value={activeDisasters} color="#d4450c" />
+        <StatCard icon="👥" label="Total Victims" value={initialVictims.length} color="#003087" />
+        <StatCard icon="🏕️" label="Relief Camps" value={initialReliefCamps.length} color="#1a3a5c" />
+        <StatCard icon="🙋" label="Volunteers" value={initialVolunteers.length} color="#c8960c" />
+        <StatCard icon="📦" label="Resource Types" value={initialResources.length} color="#059669" />
+        <StatCard icon="🧑‍🤝‍🧑" label="People Affected" value={totalAffected.toLocaleString()} color="#7c3aed" />
+      </div>
+
+      <div style={{ background: 'white', borderRadius: '6px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <h2 style={{ color: '#1a3a5c', fontSize: '16px', fontWeight: '700', marginBottom: '16px', borderBottom: '2px solid #003087', paddingBottom: '8px' }}>
+          🌊 Recent Disasters
+        </h2>
+        <table className="gov-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Type</th><th>Location</th><th>Severity</th><th>Status</th><th>Affected</th>
+            </tr>
+          </thead>
+          <tbody>
+            {initialDisasters.map(d => (
+              <tr key={d.id}>
+                <td>{d.name}</td>
+                <td>{d.type}</td>
+                <td>{d.location}</td>
+                <td><span style={{ color: d.severity === 'Critical' ? '#d4450c' : d.severity === 'High' ? '#c8960c' : '#059669', fontWeight: '600' }}>{d.severity}</span></td>
+                <td><span style={{ background: d.status === 'Active' ? '#fef2f2' : '#f0fdf4', color: d.status === 'Active' ? '#d4450c' : '#059669', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.status}</span></td>
+                <td>{d.affectedPeople.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
 }
