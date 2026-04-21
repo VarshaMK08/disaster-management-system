@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
-import { initialVictims } from '@/lib/data'
+import { supabase } from '@/lib/supabase'
+import { useEffect } from 'react'
 
 const emptyForm = { name: '', age: '', gender: 'Male', disasterId: '', location: '', status: 'In Relief Camp', contact: '' }
 
 export default function VictimsPage() {
-    const [data, setData] = useState(initialVictims)
+    const [data, setData] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editId, setEditId] = useState(null)
@@ -15,20 +16,68 @@ export default function VictimsPage() {
         d.name.toLowerCase().includes(search.toLowerCase()) ||
         d.location.toLowerCase().includes(search.toLowerCase())
     )
+    const fetchVictims = async () => {
+        const { data, error } = await supabase
+            .from('victims')
+            .select('*')
+            .order('id', { ascending: false })
 
-    const handleSubmit = () => {
+        console.log("FETCH VICTIMS:", data, error)
+
+        if (!error) setData(data)
+    }
+    useEffect(() => {
+        fetchVictims()
+    }, [])
+    const handleSubmit = async () => {
         if (!form.name || !form.location) return alert('Fill required fields')
+
         if (editId) {
-            setData(data.map(d => d.id === editId ? { ...form, id: editId, age: Number(form.age), disasterId: Number(form.disasterId) } : d))
+            const { error } = await supabase
+                .from('victims')
+                .update({
+                    ...form,
+                    age: Number(form.age),
+                    disasterId: Number(form.disasterId)
+                })
+                .eq('id', editId)
+
+            console.log("UPDATE ERROR:", error)
+
         } else {
-            setData([...data, { ...form, id: Date.now(), age: Number(form.age), disasterId: Number(form.disasterId) }])
+            const { error } = await supabase
+                .from('victims')
+                .insert([
+                    {
+                        ...form,
+                        age: Number(form.age),
+                        disasterId: Number(form.disasterId)
+                    }
+                ])
+
+            console.log("INSERT ERROR:", error)
         }
-        setShowModal(false); setForm(emptyForm); setEditId(null)
+
+        setShowModal(false)
+        setForm(emptyForm)
+        setEditId(null)
+
+        fetchVictims()
     }
 
     const handleEdit = (row) => { setForm(row); setEditId(row.id); setShowModal(true) }
-    const handleDelete = (id) => { if (confirm('Delete this record?')) setData(data.filter(d => d.id !== id)) }
+    const handleDelete = async (id) => {
+        if (confirm('Delete this record?')) {
+            const { error } = await supabase
+                .from('victims')
+                .delete()
+                .eq('id', id)
 
+            console.log("DELETE ERROR:", error)
+
+            fetchVictims()
+        }
+    }
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>

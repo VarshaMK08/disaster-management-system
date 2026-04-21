@@ -1,35 +1,96 @@
 'use client'
-import { useState } from 'react'
-import { initialVolunteers } from '@/lib/data'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
-const emptyForm = { name: '', skill: '', phone: '', assignedDisaster: '', status: 'Active', organization: '' }
+const emptyForm = { name: '', skill: '', phone: '', assigned_disaster: '', status: 'Active', organization: '' }
 
 export default function VolunteersPage() {
-    const [data, setData] = useState(initialVolunteers)
+    const [data, setData] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editId, setEditId] = useState(null)
     const [search, setSearch] = useState('')
 
-    const filtered = data.filter(d =>
-        d.name.toLowerCase().includes(search.toLowerCase()) ||
-        d.organization.toLowerCase().includes(search.toLowerCase()) ||
-        d.skill.toLowerCase().includes(search.toLowerCase())
-    )
+    const fetchVolunteers = async () => {
+        const { data, error } = await supabase
+            .from('volunteers')
+            .select('*')
+            .order('id', { ascending: false })
 
-    const handleSubmit = () => {
-        if (!form.name || !form.phone) return alert('Fill required fields')
-        if (editId) {
-            setData(data.map(d => d.id === editId ? { ...form, id: editId, assignedDisaster: Number(form.assignedDisaster) } : d))
-        } else {
-            setData([...data, { ...form, id: Date.now(), assignedDisaster: Number(form.assignedDisaster) }])
-        }
-        setShowModal(false); setForm(emptyForm); setEditId(null)
+        if (!error) setData(data)
+        else console.log(error)
     }
 
-    const handleEdit = (row) => { setForm(row); setEditId(row.id); setShowModal(true) }
-    const handleDelete = (id) => { if (confirm('Delete this record?')) setData(data.filter(d => d.id !== id)) }
+    useEffect(() => {
+        fetchVolunteers()
+    }, [])
 
+    const filtered = data.filter(d =>
+        (d.name || '').toLowerCase().includes(search.toLowerCase()) ||
+        (d.organization || '').toLowerCase().includes(search.toLowerCase()) ||
+        (d.skill || '').toLowerCase().includes(search.toLowerCase())
+    )
+
+    const handleSubmit = async () => {
+        if (!form.name || !form.phone) return alert('Fill required fields')
+
+        const payload = {
+            name: form.name,
+            skill: form.skill,
+            phone: form.phone,
+            organization: form.organization,
+            assigned_disaster: Number(form.assigned_disaster) || null,
+            status: form.status
+        }
+
+        if (editId) {
+            const { error } = await supabase
+                .from('volunteers')
+                .update(payload)
+                .eq('id', editId)
+
+            if (error) console.log(error)
+        } else {
+            const { error } = await supabase
+                .from('volunteers')
+                .insert([payload])
+
+            if (error) console.log(error)
+        }
+
+        setShowModal(false)
+        setForm(emptyForm)
+        setEditId(null)
+        fetchVolunteers()
+    }
+
+
+    // ---------------- EDIT ----------------
+    const handleEdit = (row) => {
+        setForm({
+            name: row.name,
+            skill: row.skill,
+            phone: row.phone,
+            organization: row.organization,
+            assigned_disaster: row.assigned_disaster,
+            status: row.status
+        })
+        setEditId(row.id)
+        setShowModal(true)
+    }
+
+    // ---------------- DELETE ----------------
+    const handleDelete = async (id) => {
+        if (!confirm('Delete this record?')) return
+
+        const { error } = await supabase
+            .from('volunteers')
+            .delete()
+            .eq('id', id)
+
+        if (error) console.log(error)
+        fetchVolunteers()
+    }
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -62,7 +123,7 @@ export default function VolunteersPage() {
                                 </td>
                                 <td>{d.phone}</td>
                                 <td>{d.organization}</td>
-                                <td>{d.assignedDisaster || '—'}</td>
+                                <td>{d.assigned_disaster || '—'}</td>
                                 <td>
                                     <span style={{ background: d.status === 'Active' ? '#f0fdf4' : '#f9fafb', color: d.status === 'Active' ? '#059669' : '#6b7280', padding: '2px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.status}</span>
                                 </td>
@@ -80,7 +141,7 @@ export default function VolunteersPage() {
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <div style={{ background: 'white', borderRadius: '8px', padding: '32px', width: '500px', maxHeight: '90vh', overflowY: 'auto', borderTop: '4px solid #003087' }}>
                         <h2 style={{ color: '#1a3a5c', marginBottom: '20px', fontSize: '18px' }}>{editId ? 'Edit Volunteer' : 'Add New Volunteer'}</h2>
-                        {[['Name *', 'name', 'text'], ['Phone *', 'phone', 'text'], ['Organization', 'organization', 'text'], ['Assigned Disaster ID', 'assignedDisaster', 'number']].map(([label, key, type]) => (
+                        {[['Name *', 'name', 'text'], ['Phone *', 'phone', 'text'], ['Organization', 'organization', 'text'], ['Assigned Disaster ID', 'assigned_disaster', 'number']].map(([label, key, type]) => (
                             <div key={key}>
                                 <label className="gov-label">{label}</label>
                                 <input className="gov-input" type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} />

@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
-import { initialReliefCamps } from '@/lib/data'
+import { supabase } from '@/lib/supabase'
+import { useEffect } from 'react'
 
-const emptyForm = { name: '', location: '', capacity: '', currentOccupancy: '', disasterId: '', status: 'Active', inCharge: '' }
+const emptyForm = { name: '', location: '', capacity: '', current_occupancy: '', disaster_id: '', status: 'Active', in_charge: '' }
 
 export default function ReliefCampsPage() {
-    const [data, setData] = useState(initialReliefCamps)
+    const [data, setData] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editId, setEditId] = useState(null)
@@ -15,20 +16,68 @@ export default function ReliefCampsPage() {
         d.name.toLowerCase().includes(search.toLowerCase()) ||
         d.location.toLowerCase().includes(search.toLowerCase())
     )
+    const fetchCamps = async () => {
+        const { data, error } = await supabase
+            .from('relief_camps')
+            .select('*')
+            .order('id', { ascending: false })
 
-    const handleSubmit = () => {
+        console.log("CAMPS:", data, error)
+
+        if (!error) setData(data)
+    }
+    useEffect(() => {
+        fetchCamps()
+    }, [])
+    const handleSubmit = async () => {
         if (!form.name || !form.location) return alert('Fill required fields')
-        if (editId) {
-            setData(data.map(d => d.id === editId ? { ...form, id: editId, capacity: Number(form.capacity), currentOccupancy: Number(form.currentOccupancy), disasterId: Number(form.disasterId) } : d))
-        } else {
-            setData([...data, { ...form, id: Date.now(), capacity: Number(form.capacity), currentOccupancy: Number(form.currentOccupancy), disasterId: Number(form.disasterId) }])
+
+        const payload = {
+            name: form.name,
+            location: form.location,
+            capacity: Number(form.capacity),
+            current_occupancy: Number(form.current_occupancy),
+            disaster_id: Number(form.disaster_id),
+            status: form.status,
+            in_charge: form.in_charge
         }
-        setShowModal(false); setForm(emptyForm); setEditId(null)
+
+        if (editId) {
+            const { error } = await supabase
+                .from('relief_camps')
+                .update(payload)
+                .eq('id', editId)
+
+            console.log("UPDATE ERROR:", error)
+
+        } else {
+            const { error } = await supabase
+                .from('relief_camps')
+                .insert([payload])
+
+            console.log("INSERT ERROR:", error)
+        }
+
+        setShowModal(false)
+        setForm(emptyForm)
+        setEditId(null)
+
+        fetchCamps()
     }
 
     const handleEdit = (row) => { setForm(row); setEditId(row.id); setShowModal(true) }
-    const handleDelete = (id) => { if (confirm('Delete this record?')) setData(data.filter(d => d.id !== id)) }
+    const handleDelete = async (id) => {
+        if (confirm('Delete this record?')) {
+            const { error } = await supabase
+                .from('relief_camps')
+                .delete()
+                .eq('id', id)
 
+            console.log("DELETE ERROR:", error)
+
+            fetchCamps()
+        }
+    }
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -53,16 +102,16 @@ export default function ReliefCampsPage() {
                         {filtered.length === 0 ? (
                             <tr><td colSpan={10} style={{ textAlign: 'center', color: '#6b7280', padding: '32px' }}>No records found</td></tr>
                         ) : filtered.map((d, i) => {
-                            const pct = Math.round((d.currentOccupancy / d.capacity) * 100)
+                            const pct = Math.round((d.current_occupancy / d.capacity) * 100)
                             return (
                                 <tr key={d.id}>
                                     <td>{i + 1}</td>
                                     <td style={{ fontWeight: '600' }}>{d.name}</td>
                                     <td>{d.location}</td>
                                     <td>{d.capacity}</td>
-                                    <td>{d.currentOccupancy}</td>
-                                    <td>{d.disasterId}</td>
-                                    <td>{d.inCharge}</td>
+                                    <td>{d.current_occupancy}</td>
+                                    <td>{d.disaster_id}</td>
+                                    <td>{d.in_charge}</td>
                                     <td>
                                         <span style={{ background: d.status === 'Active' ? '#fef2f2' : '#f0fdf4', color: d.status === 'Active' ? '#d4450c' : '#059669', padding: '2px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.status}</span>
                                     </td>
@@ -89,7 +138,7 @@ export default function ReliefCampsPage() {
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <div style={{ background: 'white', borderRadius: '8px', padding: '32px', width: '500px', maxHeight: '90vh', overflowY: 'auto', borderTop: '4px solid #003087' }}>
                         <h2 style={{ color: '#1a3a5c', marginBottom: '20px', fontSize: '18px' }}>{editId ? 'Edit Camp' : 'Add New Camp'}</h2>
-                        {[['Camp Name *', 'name', 'text'], ['Location *', 'location', 'text'], ['Capacity', 'capacity', 'number'], ['Current Occupancy', 'currentOccupancy', 'number'], ['Disaster ID', 'disasterId', 'number'], ['In-Charge Officer', 'inCharge', 'text']].map(([label, key, type]) => (
+                        {[['Camp Name *', 'name', 'text'], ['Location *', 'location', 'text'], ['Capacity', 'capacity', 'number'], ['Current Occupancy', 'current_occupancy', 'number'], ['Disaster ID', 'disaster_id', 'number'], ['In-Charge Officer', 'in_charge', 'text']].map(([label, key, type]) => (
                             <div key={key}>
                                 <label className="gov-label">{label}</label>
                                 <input className="gov-input" type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} />

@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import { initialResources } from '@/lib/data'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
 const emptyForm = { name: '', type: '', quantity: '', unit: '', assignedCamp: '', status: 'Available' }
 
