@@ -58,13 +58,33 @@ export default function AlertsPage() {
                             <tr key={d.id}>
                                 <td>{i + 1}</td>
                                 <td style={{ fontWeight: '600' }}>{d.title}</td>
-                                <td><span style={{ background: '#fef2f2', color: '#d4450c', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.type}</span></td>
-                                <td>{d.region}</td>
+                                <td>
+                                    <span style={{
+                                        background: '#e0f2fe',
+                                        color: '#1d4ed8',
+                                        padding: '2px 8px',
+                                        borderRadius: '12px',
+                                        fontSize: '12px',
+                                        fontWeight: '600'
+                                    }}>
+                                        {d.type}
+                                    </span>
+                                </td>                                <td>{d.region}</td>
                                 <td>{d.issuedBy}</td>
                                 <td>{d.date}</td>
                                 <td><span style={{ color: sevColor(d.severity), fontWeight: '700' }}>⚠ {d.severity}</span></td>
-                                <td><span style={{ background: d.status === 'Active' ? '#fef2f2' : '#f0fdf4', color: d.status === 'Active' ? '#d4450c' : '#059669', padding: '2px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.status}</span></td>
-                                <td style={{ display: 'flex', gap: '6px' }}>
+                                <td>
+                                    <span style={{
+                                        background: d.status === 'Active' ? '#fee2e2' : '#dcfce7',
+                                        color: d.status === 'Active' ? '#9f1239' : '#166534',
+                                        padding: '2px 10px',
+                                        borderRadius: '12px',
+                                        fontSize: '12px',
+                                        fontWeight: '600'
+                                    }}>
+                                        {d.status}
+                                    </span>
+                                </td>                                <td style={{ display: 'flex', gap: '6px' }}>
                                     <button className="gov-btn-edit" onClick={() => handleEdit(d)}>Edit</button>
                                     <button className="gov-btn-danger" onClick={() => handleDelete(d.id)}>Delete</button>
                                 </td>

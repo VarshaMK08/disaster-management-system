@@ -30,8 +30,12 @@ export default function AgenciesPage() {
     const handleEdit = (row) => { setForm(row); setEditId(row.id); setShowModal(true) }
     const handleDelete = (id) => { if (confirm('Delete this agency?')) setData(data.filter(d => d.id !== id)) }
 
-    const typeColor = (t) => t === 'Central' ? { bg: '#eff6ff', color: '#003087' } : t === 'State' ? { bg: '#f0fdf4', color: '#059669' } : { bg: '#fffbeb', color: '#c8960c' }
-
+    const typeColor = (t) =>
+        t === 'Central'
+            ? { bg: '#e0f2fe', color: '#1d4ed8' }
+            : t === 'State'
+                ? { bg: '#dcfce7', color: '#166534' }
+                : { bg: '#fef3c7', color: '#92400e' }
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -60,13 +64,17 @@ export default function AgenciesPage() {
                             return (
                                 <tr key={d.id}>
                                     <td>{i + 1}</td>
-                                    <td style={{ fontWeight: '700', color: '#003087' }}>{d.name}</td>
+                                    <td style={{ fontWeight: '700', color: '#0f172a' }}>{d.name}</td>
                                     <td>{d.fullName}</td>
                                     <td><span style={{ background: tc.bg, color: tc.color, padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.type}</span></td>
                                     <td>{d.contact}</td>
                                     <td>{d.headOffice}</td>
                                     <td>
-                                        <span style={{ fontWeight: '700', color: d.activeDeployments > 0 ? '#d4450c' : '#6b7280', fontSize: '16px' }}>
+                                        <span style={{
+                                            fontWeight: '700',
+                                            color: '#0f172a',
+                                            fontSize: '16px'
+                                        }}>
                                             {d.activeDeployments}
                                         </span>
                                     </td>

@@ -7,7 +7,7 @@ const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
     { href: '/disasters', label: 'Disasters', icon: '🌊' },
     { href: '/victims', label: 'Victims', icon: '👥' },
-    { href: '/relief-camps', label: 'Relief Camps', icon: '🏕️' },
+    { href: '/relief-camps', label: 'Camps', icon: '🏕️' },
     { href: '/volunteers', label: 'Volunteers', icon: '🙋' },
     { href: '/resources', label: 'Resources', icon: '📦' },
     { href: '/alerts', label: 'Alerts', icon: '🚨' },
@@ -22,11 +22,8 @@ export default function Sidebar() {
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user')
-        if (!storedUser) {
-            router.push('/login')
-        } else {
-            setUser(storedUser)
-        }
+        if (!storedUser) router.push('/login')
+        else setUser(storedUser)
     }, [])
 
     const handleLogout = () => {
@@ -35,29 +32,34 @@ export default function Sidebar() {
     }
 
     return (
-        <aside
-            className="gov-sidebar"
-            style={{
-                width: '220px',
-                minHeight: '100vh',
-                paddingTop: '16px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between' // 👈 important
-            }}
-        >
-            {/* Top Navigation */}
-            <div>
-                {navItems.map((item) => (
+        <aside style={{
+            position: 'fixed',
+            top: '120px',
+            left: 0,
+            width: '240px',
+            height: 'calc(100vh - 120px)',
+            background: 'var(--card)',
+            borderRight: '1px solid var(--border)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            overflowY: 'auto'
+        }}>
+
+            {/* NAV */}
+            <div style={{ paddingTop: '12px' }}>
+                {navItems.map(item => (
                     <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
                         <div style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            padding: '12px 20px', cursor: 'pointer',
-                            backgroundColor: pathname === item.href ? '#003087' : 'transparent',
-                            borderLeft: pathname === item.href ? '4px solid #d4450c' : '4px solid transparent',
-                            color: pathname === item.href ? 'white' : '#93c5fd',
-                            fontSize: '14px',
-                            fontWeight: pathname === item.href ? '600' : '400',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            padding: '12px 16px',
+                            margin: '4px 10px',
+                            borderRadius: '8px',
+                            background: pathname === item.href ? '#e0f2fe' : 'transparent',
+                            color: pathname === item.href ? 'var(--primary)' : 'var(--text)',
+                            cursor: 'pointer'
                         }}>
                             <span>{item.icon}</span>
                             <span>{item.label}</span>
@@ -66,29 +68,27 @@ export default function Sidebar() {
                 ))}
             </div>
 
-            {/* Bottom User Section */}
+            {/* USER */}
             <div style={{
                 padding: '16px',
-                borderTop: '1px solid rgba(255,255,255,0.1)'
+                borderTop: '1px solid var(--border)'
             }}>
-                <div style={{ color: 'white', fontWeight: '600', fontSize: '14px' }}>
-                    {user}
+                <div style={{ fontSize: '14px', marginBottom: '8px' }}>
+                    👤 {user}
                 </div>
 
-                <button
-                    onClick={handleLogout}
-                    style={{
-                        marginTop: '6px',
-                        background: 'none',
-                        border: 'none',
-                        color: '#f87171',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                    }}
-                >
+                <button onClick={handleLogout} style={{
+                    background: 'var(--danger)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    cursor: 'pointer'
+                }}>
                     Logout
                 </button>
             </div>
+
         </aside>
     )
 }

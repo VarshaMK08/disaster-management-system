@@ -1,25 +1,69 @@
-// src/components/Navbar.js
 export default function Navbar() {
     return (
-        <header className="gov-header" style={{ padding: '0', borderBottom: '4px solid #d4450c' }}>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '12px 24px', gap: '16px' }}>
-                <div style={{ fontSize: '40px' }}>🇮🇳</div>
+        <header style={{
+            background: 'linear-gradient(90deg, #e0f2fe, #f0fdfa)',
+            padding: '22px 28px',
+            height: '80px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000
+        }}>
+
+            {/* LEFT */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ fontSize: '32px' }}>🌍</div>
+
                 <div>
-                    <div style={{ color: '#fbbf24', fontSize: '11px', fontWeight: '600', letterSpacing: '1px' }}>
-                        GOVERNMENT OF INDIA
+                    <div style={{
+                        color: '#0f172a',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        letterSpacing: '1px'
+                    }}>
+                        DISASTER RESPONSE SYSTEM
                     </div>
-                    <div style={{ color: 'white', fontSize: '20px', fontWeight: '700', fontFamily: 'Georgia, serif' }}>
-                        National Disaster Management System
+
+                    <div style={{
+                        color: '#0f172a',
+                        fontSize: '20px',
+                        fontWeight: '800'
+                    }}>
+                        Emergency Management Dashboard
                     </div>
-                    <div style={{ color: '#93c5fd', fontSize: '11px' }}>
-                        Ministry of Home Affairs | NDMA Portal
+
+                    <div style={{
+                        color: '#64748b',
+                        fontSize: '12px'
+                    }}>
+                        Real-time coordination & relief tracking
                     </div>
-                </div>
-                <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                    <div style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '600' }}>🔴 LIVE MONITORING</div>
-                    <div style={{ color: '#93c5fd', fontSize: '11px' }}>{new Date().toLocaleDateString('en-IN', { dateStyle: 'full' })}</div>
                 </div>
             </div>
+
+            {/* RIGHT */}
+            <div style={{ textAlign: 'right' }}>
+                <div style={{
+                    color: '#ef4444',
+                    fontWeight: '700',
+                    fontSize: '13px'
+                }}>
+                    ● LIVE
+                </div>
+
+                <div style={{
+                    color: '#64748b',
+                    fontSize: '12px'
+                }}>
+                    {new Date().toLocaleDateString('en-IN', { dateStyle: 'full' })}
+                </div>
+            </div>
+
         </header>
     )
 }
