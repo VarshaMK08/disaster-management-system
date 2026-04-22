@@ -69,7 +69,8 @@ export default function AlertsPage() {
                                     }}>
                                         {d.type}
                                     </span>
-                                </td>                                <td>{d.region}</td>
+                                </td>
+                                <td>{d.region}</td>
                                 <td>{d.issuedBy}</td>
                                 <td>{d.date}</td>
                                 <td><span style={{ color: sevColor(d.severity), fontWeight: '700' }}>⚠ {d.severity}</span></td>

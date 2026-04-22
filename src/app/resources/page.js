@@ -2,33 +2,94 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
-const emptyForm = { name: '', type: '', quantity: '', unit: '', assignedCamp: '', status: 'Available' }
+const emptyForm = { name: '', type: '', quantity: '', unit: '', assigned_camp: '', status: 'Available' }
 
 export default function ResourcesPage() {
-    const [data, setData] = useState(initialResources)
+    const [data, setData] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editId, setEditId] = useState(null)
     const [search, setSearch] = useState('')
+
+    const fetchResources = async () => {
+        const { data, error } = await supabase
+            .from('resources')
+            .select('*')
+            .order('id', { ascending: false })
+
+        if (!error) setData(data)
+        else console.log(error)
+    }
+
+    useEffect(() => {
+        fetchResources()
+    }, [])
 
     const filtered = data.filter(d =>
         d.name.toLowerCase().includes(search.toLowerCase()) ||
         d.type.toLowerCase().includes(search.toLowerCase())
     )
 
-    const handleSubmit = () => {
+    // SUBMIT
+    const handleSubmit = async () => {
         if (!form.name || !form.type) return alert('Fill required fields')
-        if (editId) {
-            setData(data.map(d => d.id === editId ? { ...form, id: editId, quantity: Number(form.quantity), assignedCamp: Number(form.assignedCamp) } : d))
-        } else {
-            setData([...data, { ...form, id: Date.now(), quantity: Number(form.quantity), assignedCamp: Number(form.assignedCamp) }])
+
+        const payload = {
+            name: form.name,
+            type: form.type,
+            quantity: Number(form.quantity),
+            unit: form.unit,
+            assigned_camp: Number(form.assigned_camp) || null,
+            status: form.status
         }
-        setShowModal(false); setForm(emptyForm); setEditId(null)
+
+        if (editId) {
+            const { error } = await supabase
+                .from('resources')
+                .update(payload)
+                .eq('id', editId)
+
+            if (error) console.log(error)
+        } else {
+            const { error } = await supabase
+                .from('resources')
+                .insert([payload])
+
+            if (error) console.log(error)
+        }
+
+        setShowModal(false)
+        setForm(emptyForm)
+        setEditId(null)
+        fetchResources()
     }
 
-    const handleEdit = (row) => { setForm(row); setEditId(row.id); setShowModal(true) }
-    const handleDelete = (id) => { if (confirm('Delete this record?')) setData(data.filter(d => d.id !== id)) }
 
+    // EDIT
+    const handleEdit = (row) => {
+        setForm({
+            name: row.name,
+            type: row.type,
+            quantity: row.quantity,
+            unit: row.unit,
+            assigned_camp: row.assigned_camp,
+            status: row.status
+        })
+        setEditId(row.id)
+        setShowModal(true)
+    }
+    // DELETE
+    const handleDelete = async (id) => {
+        if (!confirm('Delete this record?')) return
+
+        const { error } = await supabase
+            .from('resources')
+            .delete()
+            .eq('id', id)
+
+        if (error) console.log(error)
+        fetchResources()
+    }
     const statusColor = (s) => s === 'Available' ? { bg: '#f0fdf4', color: '#059669' } : s === 'Low' ? { bg: '#fffbeb', color: '#c8960c' } : { bg: '#fef2f2', color: '#d4450c' }
 
     return (
@@ -63,7 +124,7 @@ export default function ResourcesPage() {
                                     <td><span style={{ background: '#eff6ff', color: '#003087', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.type}</span></td>
                                     <td style={{ fontWeight: '700', color: '#1a3a5c' }}>{Number(d.quantity).toLocaleString()}</td>
                                     <td>{d.unit}</td>
-                                    <td>Camp #{d.assignedCamp}</td>
+                                    <td>Camp #{d.assigned_camp}</td>
                                     <td><span style={{ background: sc.bg, color: sc.color, padding: '2px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>{d.status}</span></td>
                                     <td style={{ display: 'flex', gap: '6px' }}>
                                         <button className="gov-btn-edit" onClick={() => handleEdit(d)}>Edit</button>
@@ -80,7 +141,7 @@ export default function ResourcesPage() {
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <div style={{ background: 'white', borderRadius: '8px', padding: '32px', width: '500px', maxHeight: '90vh', overflowY: 'auto', borderTop: '4px solid #003087' }}>
                         <h2 style={{ color: '#1a3a5c', marginBottom: '20px', fontSize: '18px' }}>{editId ? 'Edit Resource' : 'Add New Resource'}</h2>
-                        {[['Resource Name *', 'name', 'text'], ['Quantity', 'quantity', 'number'], ['Unit (e.g. Packets, Liters)', 'unit', 'text'], ['Assigned Camp ID', 'assignedCamp', 'number']].map(([label, key, type]) => (
+                        {[['Resource Name *', 'name', 'text'], ['Quantity', 'quantity', 'number'], ['Unit (e.g. Packets, Liters)', 'unit', 'text'], ['Assigned Camp ID', 'assigned_camp', 'number']].map(([label, key, type]) => (
                             <div key={key}>
                                 <label className="gov-label">{label}</label>
                                 <input className="gov-input" type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} />

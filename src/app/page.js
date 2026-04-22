@@ -137,18 +137,18 @@ export default function Dashboard() {
         }}>
           {[
             'https://images.unsplash.com/photo-1547683905-f686c993aae5',
-            'https://images.unsplash.com/photo-1501594907352-04cda38ebc29',
-            'https://images.unsplash.com/photo-1523731407965-2430cd12f5e4',
-            'https://images.unsplash.com/photo-1473448912268-2022ce9509d8',
-            'https://images.unsplash.com/photo-1509099836639-18ba1795216d'
+            'https://images.hindustantimes.com/img/2021/12/26/1600x900/0d500e1c-6642-11ec-8222-a93af7df746e_1640531078239.jpg',
+            'https://editorial01.shutterstock.com/preview/11871596a/c0b5281c/Shutterstock_11871596a.jpg',
+            'https://thewashingtonstandard.com/wp-content/uploads/2016/06/earthquake-1600x900.jpg',
+            'https://img.freepik.com/premium-photo/tall-building-engulfed-flames-nighttime-fire-incident_658005-26636.jpg'
           ]
             // 🔥 DUPLICATE ARRAY
             .concat([
               'https://images.unsplash.com/photo-1547683905-f686c993aae5',
-              'https://images.unsplash.com/photo-1501594907352-04cda38ebc29',
-              'https://images.unsplash.com/photo-1523731407965-2430cd12f5e4',
-              'https://images.unsplash.com/photo-1473448912268-2022ce9509d8',
-              'https://images.unsplash.com/photo-1509099836639-18ba1795216d'
+              'https://images.hindustantimes.com/img/2021/12/26/1600x900/0d500e1c-6642-11ec-8222-a93af7df746e_1640531078239.jpg',
+              'https://editorial01.shutterstock.com/preview/11871596a/c0b5281c/Shutterstock_11871596a.jpg',
+              'https://thewashingtonstandard.com/wp-content/uploads/2016/06/earthquake-1600x900.jpg',
+              'https://img.freepik.com/premium-photo/tall-building-engulfed-flames-nighttime-fire-incident_658005-26636.jpg'
             ])
             .map((img, i) => (
               <img

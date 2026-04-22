@@ -34,7 +34,7 @@ export default function Navbar() {
                         fontSize: '20px',
                         fontWeight: '800'
                     }}>
-                        Emergency Management Dashboard
+                        National Disaster Management System
                     </div>
 
                     <div style={{
