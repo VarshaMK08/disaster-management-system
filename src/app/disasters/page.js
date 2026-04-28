@@ -24,22 +24,17 @@ export default function DisastersPage() {
     }, [])
 
     const fetchDisasters = async () => {
-        console.log("🚀 Fetching disasters...")
-
         const { data, error } = await supabase
-            .from('disasters')
+            .from('disasters_with_count')
             .select('*')
             .order('id', { ascending: false })
 
-        console.log("✅ FETCH DATA:", data)
-        console.log("❌ FETCH ERROR:", error)
-
         if (error) {
-            console.error("Fetch failed:", error.message)
+            console.error(error)
             return
         }
 
-        setData(data || [])
+        setData(data)
     }
 
     const filtered = data.filter(d =>
@@ -269,7 +264,7 @@ export default function DisastersPage() {
                                     </td>
 
                                     <td style={{ fontWeight: '600' }}>
-                                        {Number(d.affectedPeople).toLocaleString()}
+                                        {d.affected_count || 0}
                                     </td>
 
                                     <td style={{ display: 'flex', gap: '6px' }}>
@@ -321,8 +316,7 @@ export default function DisastersPage() {
                             ['Name *', 'name', 'text'],
                             ['Type', 'type', 'text'],
                             ['Location *', 'location', 'text'],
-                            ['Date', 'date', 'date'],
-                            ['Affected People', 'affectedPeople', 'number']
+                            ['Date', 'date', 'date']
                         ].map(([label, key, type]) => (
                             <div key={key}>
                                 <label className="gov-label">{label}</label>

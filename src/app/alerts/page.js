@@ -85,7 +85,9 @@ export default function AlertsPage() {
                                     }}>
                                         {d.status}
                                     </span>
-                                </td>                                <td style={{ display: 'flex', gap: '6px' }}>
+                                </td>
+
+                                <td style={{ display: 'flex', gap: '6px' }}>
                                     <button className="gov-btn-edit" onClick={() => handleEdit(d)}>Edit</button>
                                     <button className="gov-btn-danger" onClick={() => handleDelete(d.id)}>Delete</button>
                                 </td>

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useEffect } from 'react'
 
-const emptyForm = { name: '', age: '', gender: 'Male', disasterId: '', location: '', status: 'In Relief Camp', contact: '' }
+const emptyForm = { name: '', age: '', gender: 'Male', disaster_id: '', location: '', status: 'In Relief Camp', contact: '' }
 
 export default function VictimsPage() {
     const [data, setData] = useState([])
@@ -38,7 +38,7 @@ export default function VictimsPage() {
                 .update({
                     ...form,
                     age: Number(form.age),
-                    disasterId: Number(form.disasterId)
+                    disaster_id: Number(form.disaster_id)
                 })
                 .eq('id', editId)
 
@@ -51,7 +51,7 @@ export default function VictimsPage() {
                     {
                         ...form,
                         age: Number(form.age),
-                        disasterId: Number(form.disasterId)
+                        disaster_id: Number(form.disaster_id)
                     }
                 ])
 
@@ -107,7 +107,7 @@ export default function VictimsPage() {
                                 <td style={{ fontWeight: '600' }}>{d.name}</td>
                                 <td>{d.age}</td>
                                 <td>{d.gender}</td>
-                                <td>{d.disasterId}</td>
+                                <td>{d.disaster_id}</td>
                                 <td>{d.location}</td>
                                 <td>
                                     <span style={{
@@ -131,7 +131,7 @@ export default function VictimsPage() {
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <div style={{ background: 'white', borderRadius: '8px', padding: '32px', width: '500px', maxHeight: '90vh', overflowY: 'auto', borderTop: '4px solid #003087' }}>
                         <h2 style={{ color: '#1a3a5c', marginBottom: '20px', fontSize: '18px' }}>{editId ? 'Edit Victim' : 'Add New Victim'}</h2>
-                        {[['Name *', 'name', 'text'], ['Age', 'age', 'number'], ['Disaster ID', 'disasterId', 'number'], ['Location *', 'location', 'text'], ['Contact', 'contact', 'text']].map(([label, key, type]) => (
+                        {[['Name *', 'name', 'text'], ['Age', 'age', 'number'], ['Disaster ID', 'disaster_id', 'number'], ['Location *', 'location', 'text'], ['Contact', 'contact', 'text']].map(([label, key, type]) => (
                             <div key={key}>
                                 <label className="gov-label">{label}</label>
                                 <input className="gov-input" type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} />
